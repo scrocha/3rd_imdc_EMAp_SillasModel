@@ -35,11 +35,11 @@ O primeiro bloco de variáveis descreve memória local recente da série de caso
 
 
 $$
-cases\_roll\_mean\_m_{i,c}=\frac{1}{m}\sum_{r=0}^{m-1}Y_{i,c-r},
+\text{cases\_roll\_mean\_m}_{i,c}=\frac{1}{m}\sum_{r=0}^{m-1}Y_{i,c-r},
 $$
 
 $$
-cases\_roll\_max\_m_{i,c}=\max_{0\leq r<m}Y_{i,c-r}.
+\text{cases\_roll\_max\_m}_{i,c}=\max_{0\leq r<m}Y_{i,c-r}.
 $$
 
 
@@ -48,7 +48,7 @@ Essas variáveis resumem nível, persistência e intensidade recente. Além das 
 O segundo bloco é sazonal e histórico. Para a semana epidemiológica alvo `w(t)`, são calculados quantis históricos dos casos da mesma semana epidemiológica usando apenas observações até `c`:
 
 $$
-Q_{\alpha,i,w,c}^{hist}=Q_{\alpha}\{Y_{i,s}:w(s)=w,\ s\leq c\},
+Q_{\alpha,i,w,c}^{\mathrm{hist}}=Q_{\alpha}\{Y_{i,s}:w(s)=w,\ s\leq c\},
 \qquad \alpha\in\{0.05,0.10,0.25,0.75,0.90,0.95\}.
 $$
 
@@ -57,23 +57,23 @@ A matriz também inclui `historical_mean`, `historical_median`, `seasonal_naive`
 O terceiro bloco representa fase da temporada e interação com horizonte. A semana alvo entra por seno e cosseno sazonais,
 
 $$
-week\_sin_{t}=\sin\left(2\pi w(t)/52\right),
+\text{week\_sin}_{t}=\sin\left(2\pi w(t)/52\right),
 \qquad
-week\_cos_{t}=\cos\left(2\pi w(t)/52\right),
+\text{week\_cos}_{t}=\cos\left(2\pi w(t)/52\right),
 $$
 
 além dos indicadores `phase_start`, `phase_peak` e `phase_tail`. O horizonte `h` também entra diretamente, e a pipeline cria interações como `horizon_x_weeks_to_peak`, `horizon_x_phase_peak` e `epidemic_intensity`. A intensidade epidêmica é definida, quando possível, como a razão entre o máximo recente de quatro semanas e o quantil histórico 90 da semana alvo:
 
 $$
-epidemic\_intensity_{i,c,t}=\frac{\text{cases\_roll\_max\_4}_{i,c}}{Q_{0.90,i,w(t),c}^{hist}+1}.
+\text{epidemic\_intensity}_{i,c,t}=\frac{\text{cases\_roll\_max\_4}_{i,c}}{Q_{0.90,i,w(t),c}^{\mathrm{hist}}+1}.
 $$
 
 O quarto bloco descreve pressão espacial. Nos desafios municipais, a matriz inclui agregados da região de saúde, macroregião de saúde e UF, com lags, médias móveis e máximos recentes. Por exemplo,
 
 $$
-regional\_cases\_max\_lag\_1_{i,c}=\max_{j\in R(i)}Y_{j,c},
+\text{regional\_cases\_max\_lag\_1}_{i,c}=\max_{j\in R(i)}Y_{j,c},
 \qquad
-macroregional\_cases\_roll\_max\_4_{i,c}=\max_{0\leq r<4}\sum_{j\in M(i)}Y_{j,c-r}.
+\text{macroregional\_cases\_roll\_max\_4}_{i,c}=\max_{0\leq r<4}\sum_{j\in M(i)}Y_{j,c-r}.
 $$
 
 Nos desafios de UF, a pipeline usa agregados de macroregião aproximados pelo primeiro dígito do código da UF, como `macroregion_cases_sum`, `macroregion_cases_max`, `macroregion_incidence_mean` e `macroregion_incidence_max`, também transformados em lags e médias móveis. Para UFs também há variáveis de vizinhança geográfica derivadas de `src/spatial.py`, como casos e incidência média ou máxima nos vizinhos. Essas variáveis são úteis porque surtos arbovirais frequentemente têm estrutura espacial e temporal compartilhada.
@@ -81,7 +81,7 @@ Nos desafios de UF, a pipeline usa agregados de macroregião aproximados pelo pr
 O quinto bloco contém clima observado e índices oceânicos. Para temperatura média, precipitação total e umidade relativa média, entram médias móveis curtas de 4, 8 e 12 semanas, lags semanais e agregados em três escalas: último mês, semestre anterior e ano anterior. A precipitação usa agregados por soma nas janelas mensais e médias desses agregados nas escalas longas, temperatura e umidade usam médias. Os índices oceânicos `enso`, `iod` e `pdo` entram como lags mensais de 1 a 12 meses, aproximados por deslocamentos de quatro semanas:
 
 $$
-\text{pdo\_month\_lag\_m}_{c}=\text{pdo}_{c-4m},\qquad m=1,\ldots,12.
+\text{pdo\_month\_lag\_m}_{c}=\mathrm{pdo}_{c-4m},\qquad m=1,\ldots,12.
 $$
 
 Esse bloco não deve ser interpretado causalmente no relatório. Ele funciona como conjunto de marcadores climáticos de grande escala que podem estar associados a padrões sazonais e regionais, mas a modelagem é estritamente preditiva.
@@ -146,13 +146,13 @@ $$
 O baseline histórico usa a mediana histórica sazonal e aproxima a escala pela distância interquartílica. Para a semana epidemiológica `w`,
 
 $$
-\sigma_{i,w}=\frac{Q^{hist}_{0.75,i,w}-Q^{hist}_{0.25,i,w}}{1.349},
+\sigma_{i,w}=\frac{Q^{\mathrm{hist}}_{0.75,i,w}-Q^{\mathrm{hist}}_{0.25,i,w}}{1.349},
 $$
 
 com limite inferior de escala para evitar intervalos degenerados. O quantil previsto pelo baseline é
 
 $$
-\widehat{Q}^{base}_{\alpha,i,t}=\max\left(0,\;m_{i,w}+z_{\alpha}\sigma_{i,w}\sqrt{1+h/52}\right),
+\widehat{Q}^{\mathrm{base}}_{\alpha,i,t}=\max\left(0,\;m_{i,w}+z_{\alpha}\sigma_{i,w}\sqrt{1+h/52}\right),
 $$
 
 onde `h` é o horizonte dentro da temporada. Esse baseline não é o modelo final de submissão, mas serve como referência e como âncora do modelo residual.
