@@ -37,5 +37,3 @@ data/results/figures/*
 !data/results/figures/model_comparison/
 !data/results/figures/model_comparison/**
 
-# Heavy/generated visual diagnostics
-plot_submissions/
