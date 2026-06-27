@@ -169,19 +169,6 @@ data/submissions/chikungunya_uf/xgb_quantile_log1p/{validation_1..4,final}/
 data/submissions/chikungunya_city/xgb_quantile/{validation_1..4,final}/
 ```
 
-## Simplificações Possíveis
-
-Para uma versão ainda mais enxuta do repositório:
-
-- remover `src/diagnostics.py`, se os diagnósticos exploratórios não forem mais
-  usados;
-- deixar `scripts/fetch_external_predictions.py` fora da execução padrão, pois
-  ele depende da API e serve apenas para comparação;
-- manter `scripts/plot_final_validation_models.py` enquanto `final_report.md`
-  depender das figuras agregadas;
-- manter `submission_workflow.ipynb` como guia de envio, mas tratar
-  `plot_submissions/` como saída local, não como artefato de Git.
-
 ## Referências
 
 O método combina regressão quantílica com XGBoost e baselines sazonais
